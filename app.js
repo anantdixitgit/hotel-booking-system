@@ -88,7 +88,7 @@ app.delete("/listing/:id", async (req, res) => {
   await Listing.findByIdAndDelete(id);
   res.redirect("/listings");
 });
-//main branch
+
 app.get("/", (req, res) => {
   res.send("hi i am home page");
 });
