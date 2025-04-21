@@ -13,7 +13,7 @@ app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "/public")));
 //finaly all updates done
-
+console.log("helllo i am anant dixit");
 main()
   .then(() => {
     console.log("connected to database");
