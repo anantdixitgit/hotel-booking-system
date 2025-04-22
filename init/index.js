@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const initData = require("./data.js");
 const Listing = require("../models/listing.js");
 
+console.log("hello devanshu");
+
 main()
   .then(() => {
     console.log("connected to database");

@@ -5,6 +5,8 @@ const Listing = require("./models/listing.js");
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
+const wrapAsync = require("./utils/wrapasync.js");
+const ExpressError = require("./utils/ExpressError.js");
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -30,6 +32,12 @@ app.get("/listings", async (req, res) => {
   res.render("listings/index.ejs", { allListings });
 });
 
+//create New listing
+app.get("/listings/new", (req, res) => {
+  console.log("yes");
+  res.render("listings/newlisting.ejs");
+});
+
 //showing all data of particular property
 app.get("/listings/:id", async (req, res) => {
   let { id } = req.params;
@@ -37,29 +45,27 @@ app.get("/listings/:id", async (req, res) => {
   res.render("listings/show.ejs", { listing });
 });
 
-//create New listing
-app.get("/listing/new", (req, res) => {
-  res.render("listings/newlisting.ejs");
-});
-
 //now after taking input from form we add that new listing in database and redirect
-app.post("/listings", async (req, res) => {
-  let { title, description, image, price, location, country } = req.body;
+app.post(
+  "/listings",
+  wrapAsync(async (req, res, next) => {
+    let { title, description, image, price, location, country } = req.body;
 
-  const listing = new Listing({
-    title,
-    description,
-    image,
-    price,
-    location,
-    country,
-  });
-  await listing.save();
-  res.redirect("/listings");
-});
+    const listing = new Listing({
+      title,
+      description,
+      image,
+      price,
+      location,
+      country,
+    });
+    await listing.save();
+    res.redirect("/listings");
+  })
+);
 
 //edit the data ,first we give get request to render form and then put request to do actual change in db
-app.get("/listing/:id/edit", async (req, res) => {
+app.get("/listings/:id/edit", async (req, res) => {
   let { id } = req.params;
   const listing = await Listing.findById(id);
   res.render("listings/edit_listing.ejs", { listing });
@@ -84,7 +90,7 @@ app.put("/listings/:id", async (req, res) => {
 });
 
 //delete the listing
-app.delete("/listing/:id", async (req, res) => {
+app.delete("/listings/:id", async (req, res) => {
   let { id } = req.params;
   await Listing.findByIdAndDelete(id);
   res.redirect("/listings");
@@ -92,6 +98,17 @@ app.delete("/listing/:id", async (req, res) => {
 
 app.get("/", (req, res) => {
   res.send("hi i am home page");
+});
+
+// Use this instead:
+// Replace your app.all("*") with:
+app.use((req, res, next) => {
+  next(new ExpressError(404, "Page Not Found!"));
+});
+
+app.use((err, req, res, next) => {
+  let { status = 500, message = "some error occured" } = err;
+  res.status(status).send(message);
 });
 app.listen(8080, () => {
   console.log("server listening at port 8080");
