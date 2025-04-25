@@ -42,7 +42,7 @@ app.get("/listings/new", (req, res) => {
 //showing all data of particular property
 app.get("/listings/:id", async (req, res) => {
   let { id } = req.params;
-  const listing = await Listing.findById(id);
+  const listing = await Listing.findById(id).populate("reviews");
   res.render("listings/show.ejs", { listing });
 });
 
@@ -97,6 +97,7 @@ app.delete("/listings/:id", async (req, res) => {
   res.redirect("/listings");
 });
 
+//add the review in db
 app.post("/listings/:id/reviews", async (req, res) => {
   let listing = await Listing.findById(req.params.id);
 
@@ -107,6 +108,20 @@ app.post("/listings/:id/reviews", async (req, res) => {
   await listing.save();
   res.redirect(`/listings/${listing._id}`);
 });
+
+//delete request for reviews
+app.delete(
+  "/listings/:id/reviews/:reviewId",
+  wrapAsync(async (req, res) => {
+    let { id, reviewId } = req.params;
+    console.log(await Listing.findById(id));
+    console.log(await Review.findById(reviewId));
+    // res.send("working properly");
+    await Listing.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
+    await Review.findByIdAndDelete(reviewId);
+    res.redirect(`/listings/${id}`);
+  })
+);
 
 app.get("/", (req, res) => {
   res.send("hi i am home page");

@@ -4,7 +4,10 @@
   <div class="container mt-4">
     <div class="row justify-content-center">
       <div class="col-lg-8 col-md-10">
-        <div class="card shadow-sm" style="width: 90%; margin: 0 auto">
+        <div
+          class="card shadow-sm"
+          style="width: 90%; margin: 0 auto; border: none"
+        >
           <img
             src="<%= listing.image %>"
             class="card-img-top"
@@ -76,6 +79,32 @@
                 </div>
                 <button class="btn btn-outline-dark">Submit</button>
               </form>
+            </div>
+
+            <hr />
+
+            <p><b>All Reviews</b></p>
+            <div class="row gx-3">
+              <% for(review of listing.reviews){ %>
+              <div class="col-md-6 mb-3">
+                <!-- Column wrapper -->
+                <div class="card h-100">
+                  <!-- Card as separate element inside column -->
+                  <div class="card-body">
+                    <h5 class="card-title">Review</h5>
+                    <p class="card-text"><%= review.comment %></p>
+
+                    <p class="card-text"><%= review.rating %> stars</p>
+                    <form
+                      method="POST"
+                      action="/listings/<%=listing._id%>/reviews/<%=review.id%>?_method=DELETE"
+                    >
+                      <button class="btn btn-sm btn-dark">Delete</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <% } %>
             </div>
           </div>
         </div>
