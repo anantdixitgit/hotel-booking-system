@@ -3,7 +3,7 @@ const router = express.Router();
 const wrapAsync = require("../utils/wrapasync.js");
 const ExpressError = require("../utils/ExpressError.js");
 const Listing = require("../models/listing.js");
-const { isLoggedIn } = require("../middleware.js");
+const { isLoggedIn, isOwner } = require("../middleware.js");
 
 router.get("/", async (req, res) => {
   const allListings = await Listing.find({});
@@ -18,9 +18,12 @@ router.get("/new", isLoggedIn, (req, res) => {
 });
 
 //showing all data of particular property
+
 router.get("/:id", async (req, res) => {
   let { id } = req.params;
-  const listing = await Listing.findById(id).populate("reviews");
+  const listing = await Listing.findById(id)
+    .populate("reviews")
+    .populate("owner");
   if (!listing) {
     req.flash("error", "Listing doesnot exist");
     res.redirect("/listings");
@@ -42,6 +45,7 @@ router.post(
       location,
       country,
     });
+    listing.owner = req.user._id;
     await listing.save();
 
     req.flash("success", "New Listing Created");
@@ -50,7 +54,7 @@ router.post(
 );
 
 //edit the data ,first we give get request to render form and then put request to do actual change in db
-router.get("/:id/edit", isLoggedIn, async (req, res) => {
+router.get("/:id/edit", isLoggedIn, isOwner, async (req, res) => {
   let { id } = req.params;
   const listing = await Listing.findById(id);
   if (!listing) {
@@ -61,7 +65,7 @@ router.get("/:id/edit", isLoggedIn, async (req, res) => {
 });
 
 //update in db finally
-router.put("/:id", isLoggedIn, async (req, res) => {
+router.put("/:id", isLoggedIn, isOwner, async (req, res) => {
   // console.log("put request recieve");
   // res.send("working");
   let { id } = req.params;
@@ -80,7 +84,7 @@ router.put("/:id", isLoggedIn, async (req, res) => {
 });
 
 //delete the listing
-router.delete("/:id", isLoggedIn, async (req, res) => {
+router.delete("/:id", isLoggedIn, isOwner, async (req, res) => {
   let { id } = req.params;
   await Listing.findByIdAndDelete(id);
   req.flash("success", "Listing Deleted!");
