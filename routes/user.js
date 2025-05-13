@@ -25,6 +25,17 @@ router.get("/login", (req, res) => {
   res.render("users/userlogin.ejs");
 });
 
+router.get("/logout", (req, res, next) => {
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+
+    req.flash("success", "you logout successfully");
+    res.redirect("/listings");
+  });
+});
+
 router.post(
   "/login",
   passport.authenticate("local", {
