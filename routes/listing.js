@@ -3,6 +3,7 @@ const router = express.Router();
 const wrapAsync = require("../utils/wrapasync.js");
 const ExpressError = require("../utils/ExpressError.js");
 const Listing = require("../models/listing.js");
+const { isLoggedIn } = require("../middleware.js");
 
 router.get("/", async (req, res) => {
   const allListings = await Listing.find({});
@@ -11,7 +12,7 @@ router.get("/", async (req, res) => {
 });
 
 //create New listing
-router.get("/new", (req, res) => {
+router.get("/new", isLoggedIn, (req, res) => {
   console.log("yes");
   res.render("listings/newlisting.ejs");
 });
@@ -49,7 +50,7 @@ router.post(
 );
 
 //edit the data ,first we give get request to render form and then put request to do actual change in db
-router.get("/:id/edit", async (req, res) => {
+router.get("/:id/edit", isLoggedIn, async (req, res) => {
   let { id } = req.params;
   const listing = await Listing.findById(id);
   if (!listing) {
@@ -60,7 +61,7 @@ router.get("/:id/edit", async (req, res) => {
 });
 
 //update in db finally
-router.put("/:id", async (req, res) => {
+router.put("/:id", isLoggedIn, async (req, res) => {
   // console.log("put request recieve");
   // res.send("working");
   let { id } = req.params;
@@ -79,7 +80,7 @@ router.put("/:id", async (req, res) => {
 });
 
 //delete the listing
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", isLoggedIn, async (req, res) => {
   let { id } = req.params;
   await Listing.findByIdAndDelete(id);
   req.flash("success", "Listing Deleted!");
