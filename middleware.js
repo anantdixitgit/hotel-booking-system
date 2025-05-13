@@ -6,3 +6,13 @@ module.exports.isLoggedIn = function (req, res, next) {
   }
   next();
 };
+
+//saving redirectUrl value to locals
+
+module.exports.saveRedirectUrl = (req, res, next) => {
+  if (req.session.redirectUrl) {
+    console.log("yes hurrey");
+    res.locals.redirectUrl = req.session.redirectUrl;
+  }
+  next();
+};
