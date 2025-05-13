@@ -38,7 +38,7 @@
                 </li>
               </ul>
             </div>
-
+            <%if(currUser && currUser._id.equals(listing.owner._id)){%>
             <div class="d-flex gap-2 mt-4 mb-4">
               <a href="/listings/<%=listing._id%>/edit" class="btn btn-primary"
                 >Edit Details</a
@@ -50,9 +50,10 @@
                 <button class="btn btn-danger">Delete Listing</button>
               </form>
             </div>
-
+            <%}%>
             <hr />
 
+            <%if(currUser){%>
             <div class="mt-3 mb-3">
               <h4>Leave a Review</h4>
               <form
@@ -84,7 +85,7 @@
                 <button class="btn btn-outline-dark">Submit</button>
               </form>
             </div>
-
+            <%}%>
             <hr />
 
             <p><b>All Reviews</b></p>
@@ -95,7 +96,7 @@
                 <div class="card h-100">
                   <!-- Card as separate element inside column -->
                   <div class="card-body">
-                    <h5 class="card-title">Review</h5>
+                    <h5 class="card-title">@<%=review.author.username%></h5>
                     <p class="card-text"><%= review.comment %></p>
 
                     <p class="card-text"><%= review.rating %> stars</p>
