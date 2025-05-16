@@ -21,11 +21,16 @@ router.get("/new", isLoggedIn, listingController.renderNewForm);
 router.get("/:id", listingController.showlistingdata);
 
 //now after taking input from form we add that new listing in database and redirect
-// router.post("/", wrapAsync(listingController.createListing));
+router.post(
+  "/",
+  isLoggedIn,
+  upload.single("image"),
+  wrapAsync(listingController.createListing)
+);
 
-router.post("/", upload.single("image"), (req, res) => {
-  res.send(req.file);
-});
+// router.post("/", upload.single("image"), (req, res) => {
+//   res.send(req.file);
+// });
 
 //edit the data ,first we give get request to render form and then put request to do actual change in db
 router.get("/:id/edit", isLoggedIn, isOwner, listingController.renderEditForm);
