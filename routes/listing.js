@@ -36,7 +36,13 @@ router.post(
 router.get("/:id/edit", isLoggedIn, isOwner, listingController.renderEditForm);
 
 //update in db finally
-router.put("/:id", isLoggedIn, isOwner, listingController.updateListing);
+router.put(
+  "/:id",
+  isLoggedIn,
+  isOwner,
+  upload.single("image"),
+  listingController.updateListing
+);
 
 //delete the listing
 router.delete("/:id", isLoggedIn, isOwner, listingController.destoryListing);
